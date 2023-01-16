@@ -1,7 +1,6 @@
 from requests.auth import HTTPBasicAuth
 import setup
 import requests
-import json
 
 from setup import INSALES_BASE_URL, INSALES_API_ID, INSALES_API_PASS, INSALES_PER_PAGE
 
@@ -26,10 +25,11 @@ def get_qty():
     url = INSALES_BASE_URL + '/products/count.json'
     response = requests.get(url, auth=HTTPBasicAuth(INSALES_API_ID, INSALES_API_PASS))
     if not response.ok:
-        setup.logger.error(response)
+        setup.logger.error(f'Error connecting InSales. Server returned: {response}')
+        exit(1)
     else:
         qty = response.json()['count']
-    return qty
+        return qty
 
 
 def get_page(page):
@@ -41,6 +41,8 @@ def get_page(page):
         setup.logger.error(response)
     else:
         setup.logger.debug("OK")
+        if setup.DEBUG:
+            setup.save_debug_file(f'insales_page_{page}.txt', response.json())
     return response.json()
 
 
@@ -53,19 +55,14 @@ def get_goods():
     for i in range(1, count+1):
         page = get_page(i)
         goods += page
-        if setup.DEBUG:
-            with open(f'temp/insales_page_{i}.txt', 'w+', encoding='utf8') as file:
-                json.dump(page, file, indent=4, ensure_ascii=False)
     if setup.DEBUG:
-        with open('temp/insales_all.txt', 'w+', encoding='utf8') as file:
-            json.dump(goods, file, indent=4, ensure_ascii=False)
+        setup.save_debug_file('insales_all.txt', goods)
     goods_without_img = []
     for good in goods:
         if not good['images']:
             goods_without_img.append(good)
     if setup.DEBUG:
-        with open('temp/insales_no_img.txt', 'w+', encoding='utf8') as file:
-            json.dump(goods_without_img, file, indent=4, ensure_ascii=False)
+        setup.save_debug_file('insales_no_img.txt', goods_without_img)
     result = {}
     for good in goods_without_img:
         result[good['product_field_values'][0]['value']] = good['id']

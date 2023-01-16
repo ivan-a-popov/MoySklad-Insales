@@ -1,7 +1,6 @@
 import base64
 import requests
 import setup
-import json
 
 from setup import MOYSKLAD_NAME, MOYSKLAD_SECRET, MOYSKLAD_BASE_URL, MOYSKLAD_TOKEN, MOYSKLAD_PER_PAGE
 
@@ -47,8 +46,7 @@ def get_goods():
             break
 
     if setup.DEBUG:
-        with open('temp/ms_with_img.txt', 'w+', encoding='utf8') as file:
-            json.dump(goods_with_img, file, indent=4, ensure_ascii=False)
+        setup.save_debug_file('ms_with_img.txt', goods_with_img)
 
     result = {}
     for good in goods_with_img:
