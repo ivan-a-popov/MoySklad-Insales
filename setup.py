@@ -1,7 +1,7 @@
 import logging
 import json
 
-DEBUG = True  # set True to save debug files in FILEDIR
+DEBUG = False  # set True to save debug files in FILEDIR
 FILEDIR = 'temp'
 
 INSALES_BASE_URL = 'https://myshop-bla-bla.myinsales.ru/admin'
