@@ -32,26 +32,23 @@ def get_goods():
     """
     endpoint = f'entity/assortment?limit={MOYSKLAD_PER_PAGE}'
     next_href = f'{MOYSKLAD_BASE_URL}/{endpoint}'
-    goods_with_img = []
+    goods_with_img = {}
 
     while next_href:
         page = get_page(next_href)
         for good in page['rows']:
             if good['meta']['type'] == 'product':
                 if good['images']['meta']['size']:
-                    goods_with_img.append(good)
+                    goods_with_img[good['externalCode']] = good['id']
         try:
             next_href = page['meta']['nextHref']
         except KeyError:
             break
 
     if setup.DEBUG:
-        setup.save_debug_file('ms_with_img.txt', goods_with_img)
+        setup.save_debug_file('ms_with_img.json', goods_with_img)
 
-    result = {}
-    for good in goods_with_img:
-        result[good['externalCode']] = good['id']
-    return result
+    return goods_with_img
 
 
 def get_images(code):
@@ -80,5 +77,5 @@ def get_src(url):
     return response.url
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # debug function
     get_goods()

@@ -42,7 +42,7 @@ def get_page(page):
     else:
         setup.logger.debug("OK")
         if setup.DEBUG:
-            setup.save_debug_file(f'insales_page_{page}.txt', response.json())
+            setup.save_debug_file(f'insales_page_{page}.json', response.json())
     return response.json()
 
 
@@ -56,13 +56,13 @@ def get_goods():
         page = get_page(i)
         goods += page
     if setup.DEBUG:
-        setup.save_debug_file('insales_all.txt', goods)
+        setup.save_debug_file('insales_all.json', goods)
     goods_without_img = []
     for good in goods:
         if not good['images']:
             goods_without_img.append(good)
     if setup.DEBUG:
-        setup.save_debug_file('insales_no_img.txt', goods_without_img)
+        setup.save_debug_file('insales_no_img.json', goods_without_img)
     result = {}
     for good in goods_without_img:
         result[good['product_field_values'][0]['value']] = good['id']
